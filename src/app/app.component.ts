@@ -1,56 +1,39 @@
 import { Component } from '@angular/core';
-import { DropDownFilterSettings } from '@progress/kendo-angular-dropdowns';
+import { GroupResult, groupBy } from '@progress/kendo-data-query';
+import { storeProducts } from './store-products';
 
 @Component({
   selector: 'my-app',
   template: `
-    <div class="example-config">
-        <input id="cs" type="checkbox" kendoCheckBox [(ngModel)]="filterSettings.caseSensitive">
-        <label for="cs">Case-sensitive</label>
-        <hr />
-        <div>
-            <input id="stw" type="radio" kendoRadioButton name="op" (click)="changeFilterOperator('startsWith')" checked>
-            <label for="stw">StartsWith Operator</label>
+        <div class="example-wrapper">
+            <kendo-label text="Select products">
+                <kendo-multiselect
+                    [data]="groupedData"
+                    textField="name"
+                    (filterChange)="filterChange($event)"
+                    [filterable]="true"
+                    [autoClose]="false"
+                    valueField="name">
+                </kendo-multiselect>
+            </kendo-label>
         </div>
-        <div>
-            <input id="cnt" type="radio" kendoRadioButton name="op"(click)="changeFilterOperator('contains')">
-            <label for="cnt">Contains Operator</label>
-        </div>
-    </div>
-
-    <kendo-label text="T-shirt size:">
-        <kendo-multiselect
-            [data]="data"
-            [kendoDropDownFilter]="filterSettings"
-            textField="text"
-            valueField="value"
-        >
-        </kendo-multiselect>
-    </kendo-label>
     `,
-  styles: [
-    `
-            input[type="checkbox"],
-            input[type="radio"] {
-                margin-right: 10px;
-            }
-    `,
-  ],
 })
 export class AppComponent {
-  public data: Array<{ text: string; value: number }> = [
-    { text: 'Small', value: 1 },
-    { text: 'Medium', value: 2 },
-    { text: 'Large', value: 3 },
-    { text: 'Smedium', value: 3 },
-  ];
+  public groupedData: GroupResult[] = groupBy(storeProducts, [
+    { field: 'subcategory' },
+  ]) as GroupResult[];
 
-  public filterSettings: DropDownFilterSettings = {
-    caseSensitive: false,
-    operator: 'startsWith',
-  };
-
-  public changeFilterOperator(operator: 'startsWith' | 'contains'): void {
-    this.filterSettings.operator = operator;
+  public filterChange(filterText?: string): void {
+    this.groupedData = groupBy(
+      !!filterText
+        ? storeProducts.filter((product) =>
+            product.name
+              .toLocaleLowerCase()
+              .includes(filterText.toLocaleLowerCase())
+          )
+        : storeProducts,
+      [{ field: 'subcategory' }]
+    ) as GroupResult[];
   }
 }
