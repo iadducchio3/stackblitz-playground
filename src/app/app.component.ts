@@ -32,7 +32,9 @@ export class AppComponent {
               product.name
                 .toLocaleLowerCase()
                 .includes(filterText.toLocaleLowerCase()) ||
-              product.subcategory.includes(filterText.toLocaleLowerCase())
+              product.subcategory
+                .toLocaleLowerCase()
+                .includes(filterText.toLocaleLowerCase())
           )
         : storeProducts,
       [{ field: 'subcategory' }]
