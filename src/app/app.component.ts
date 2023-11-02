@@ -27,10 +27,13 @@ export class AppComponent {
   public filterChange(filterText?: string): void {
     this.groupedData = groupBy(
       !!filterText
-        ? storeProducts.filter((product) =>
-            product.name
-              .toLocaleLowerCase()
-              .includes(filterText.toLocaleLowerCase())
+        ? storeProducts.filter(
+            (product) =>
+              product.name
+                .toLocaleLowerCase()
+                .includes(filterText.toLocaleLowerCase()) ||
+              product.category.includes(filterText.toLocaleLowerCase()) ||
+              product.subcategory.includes(filterText.toLocaleLowerCase())
           )
         : storeProducts,
       [{ field: 'subcategory' }]
